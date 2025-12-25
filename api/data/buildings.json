@@ -1,0 +1,17 @@
+[
+    {
+        "name": "Molière",
+        "letter": "M",
+        "floor": 0
+    },
+    {
+        "name": "Cour d'Honneur",
+        "letter": "CH",
+        "floor": 1
+    },
+    {
+        "name": "Victor Hugo",
+        "letter": "VH",
+        "floor": 1
+    }
+]
