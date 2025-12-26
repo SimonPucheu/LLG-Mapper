@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <title>LLG Mapper</title>
+</head>
+<body>
+
+    <div class="ecran">
+        
+        <section class="carte">
+            <nav class="selecteur-double">
+                <div class="colonne-etage">
+                    <span class="nom-cour">VH</span>
+                    <button class="btn-etage" niveau="vh_2">3</button>
+                    <button class="btn-etage" niveau="vh_2">2</button>
+                    <button class="btn-etage" niveau="vh_1">1</button>
+                    <button class="btn-etage active" niveau="vh_0">0</button>
+                    <div class="vide"></div>
+                </div>
+
+                <div class="colonne-etage">
+                    <span class="nom-cour">Molière</span>
+                    <div class="vide"></div>
+                    <button class="btn-etage" niveau="mol_3">3</button>
+                    <button class="btn-etage" niveau="mol_2">2</button>
+                    <button class="btn-etage" niveau="mol_1">1</button>
+                    <button class="btn-etage" niveau="mol_0">0</button>
+                </div>
+            </nav>
+
+            <div id="plan-container">
+                <img src="Plan LLg.jpg" alt="Plan du Lycée" id="plan-image">
+            </div>
+        </section>
+
+        <section class="zone-liste">
+            <h2>Salles</h2>
+            <div class="barre-recherche">
+                <input type="text" placeholder="Rechercher une salle..." id="input-recherche">
+            </div>
+            <div class="liste-salles">
+                <div class="salle">M201</div>
+                <div class="salle">M202</div>
+                <div class="salle">M203</div>
+                <div class="salle">M204</div>
+                <div class="salle">M205</div>
+                <div class="salle">M206</div>
+                <div class="salle">M207</div>
+                <div class="salle">VH101</div>
+                <div class="salle">VH102</div>
+                <div class="salle">VH103</div>
+                <div class="salle">VH104</div>
+                <div class="salle">VH105</div>
+                <div class="salle">VH106</div>
+                <div class="salle">VH107</div>
+                <div class="salle">VH108</div>
+                <div class="salle">VH109</div>
+                <div class="salle">VH110</div>
+                <div class="salle">VH111</div>
+            </div>
+        </section>
+
+    </div>
+
+</body>
+</html>
