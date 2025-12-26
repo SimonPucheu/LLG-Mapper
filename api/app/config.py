@@ -4,15 +4,13 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 class Config:
-    """Configuration de base (commune à tous les environnements)"""
-
-    # Sécurité
+    # Safety
     SECRET_KEY = os.getenv("SECRET_KEY", "dev-secret-key")
 
     # Flask
     JSON_SORT_KEYS = False
 
-    # Base de données (par défaut : SQLite)
+    # Database (default: SQLite)
     SQLALCHEMY_DATABASE_URI = os.getenv(
         "DATABASE_URL",
         f"sqlite:///{BASE_DIR / 'database.sqlite3'}"

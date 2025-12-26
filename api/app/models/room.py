@@ -19,10 +19,15 @@ class Room(db.Model):
     capacity = db.Column(db.Integer)
     is_open = db.Column(db.Boolean, default=True)
     type_id = db.Column(db.Integer, db.ForeignKey("room_types.id"), nullable=False, default=0)
-
+    locationX = db.Column(db.Integer, nullable=False)
+    locationY = db.Column(db.Integer, nullable=False)
+    sizeX = db.Column(db.Integer, nullable=False)
+    sizeY = db.Column(db.Integer, nullable=False)
+    
     building = db.relationship("Building", back_populates="rooms")
     type = db.relationship("RoomType", back_populates="rooms")
     features = db.relationship("Feature", secondary="room_features", back_populates="rooms")
+    classes = db.relationship("Class", back_populates="room")
 
     @property
     def display_name(self):
@@ -38,22 +43,9 @@ class Room(db.Model):
             "floor": self.floor,
             "capacity": self.capacity,
             "is_open": self.is_open,
-            "building": {
-                "id": self.building.id,
-                "code": self.building.code,
-                "name": self.building.name
-            } if self.building else None,
-            "type": {
-                "id": self.type,
-                "code": self.type.code,
-                "name": self.type.name
-            } if self.type else None,
-            "features":
-            [
-                {
-                    "id": f.id,
-                    "code": f.code,
-                    "name": f.name
-                } for f in self.features
-            ] if self.features else []
+            "location": [self.locationX, self.locationY],
+            "size": [self.sizeX, self.sizeY],
+            "building": self.building.to_dict() if self.building else None,
+            "type": self.type.to_dict() if self.type else None,
+            "features": [f.to_dict() for f in self.features] if self.features else []
         }

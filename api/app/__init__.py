@@ -1,21 +1,36 @@
 from flask import Flask
-from flask_cors import CORS
-from .config import DevelopmentConfig
 from .extensions import db, migrate
-from . import models
 
 def create_app():
     app = Flask(__name__)
-    app.config.from_object(DevelopmentConfig)
 
-    CORS(app)
+    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///app.db"
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
     db.init_app(app)
     migrate.init_app(app, db)
 
-    from .routes.example import example_bp
-    from .routes.room import rooms_bp
-    app.register_blueprint(example_bp, url_prefix="/api")
-    app.register_blueprint(rooms_bp, url_prefix="/api")
+    from .routes import (
+        rooms_bp,
+        classes_bp,
+        buildings_bp,
+        # room_types_bp,
+        # features_bp,
+        # teachers_bp,
+        # groups_bp,
+        health_bp,
+    )
+
+    for bp in [
+        rooms_bp,
+        classes_bp,
+        buildings_bp,
+        # room_types_bp,
+        # features_bp,
+        # teachers_bp,
+        # groups_bp,
+        health_bp,
+    ]:
+        app.register_blueprint(bp)
 
     return app

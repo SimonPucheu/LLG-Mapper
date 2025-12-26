@@ -4,14 +4,10 @@ class Feature(db.Model):
     __tablename__ = "features"
 
     id = db.Column(db.Integer, primary_key=True)
-    code = db.Column(db.String(10), nullable=False, unique=True)
     name = db.Column(db.String(50), nullable=False, unique=True)
+    code = db.Column(db.String(10), nullable=False, unique=True)
 
-    rooms = db.relationship(
-        "Room",
-        secondary="room_features",
-        back_populates="features"
-    )
+    rooms = db.relationship("Room", secondary="room_features", back_populates="features")
 
     room_features = db.Table(
         "room_features",
@@ -22,6 +18,6 @@ class Feature(db.Model):
     def to_dict(self):
         return {
             "id": self.id,
-            "code": self.code,
             "name": self.name,
+            "code": self.code,
         }
