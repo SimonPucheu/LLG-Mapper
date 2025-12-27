@@ -9,10 +9,3 @@ class Group(db.Model):
     grade = db.Column(db.Enum(Grade, name="class_frequency"), nullable=False)
 
     classes = db.relationship("Class", back_populates="group")
-
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "name": self.name,
-            "grade": self.grade,
-        }

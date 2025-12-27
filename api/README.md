@@ -177,7 +177,7 @@ api/
 ├── rooms/
 │   ├── GET    /rooms
 │   │          └── Optional query parameters:
-│   │              ?building_id=<Integer>&floor=<Integer>&feature_codes=[<String>...]&timestamp=YYYY-MM-DDTHH:MM:SS
+│   │              ?building_id=<Integer>&floor=<Integer>&feature_codes=[<String>...]&is_available=<Boolean>&availability_at=YYYY-MM-DDTHH:MM:SS
 │   │
 │   ├── GET    /rooms/<id>
 │   │

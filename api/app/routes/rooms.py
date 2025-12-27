@@ -1,21 +1,44 @@
 from flask import Blueprint, request, jsonify
+from marshmallow import ValidationError
 from sqlalchemy import and_
+from sqlalchemy.orm import selectinload
+from datetime import datetime
+
 from ..models.room import Room
 from ..models.feature import Feature
 from ..extensions import db
+from ..schemas import RoomSchema
 
 bp = Blueprint("rooms", __name__, url_prefix="/rooms")
+room_schema = RoomSchema()
+rooms_schema = RoomSchema(many=True)
+
 
 @bp.route("", methods=["GET"])
 def list_rooms():
-    query = Room.query
+    query = Room.query.options(selectinload(Room.classes))
 
     # Filters
     building_id = request.args.get("building_id", type=int)
     floor = request.args.get("floor", type=int)
     feature_codes = request.args.getlist("feature_codes")
-    timestamp = request.args.get("timestamp")
 
+    availability_at = (
+        request.args.get(
+            "availability_at",
+            type=lambda v: datetime.fromisoformat(v)
+        )
+        if request.args.get("availability_at")
+        else None
+    )
+
+    is_available = (
+        request.args.get("is_available").lower() == "true"
+        if request.args.get("is_available")
+        else None
+    )
+
+    # SQL-level filters
     if building_id is not None:
         query = query.filter(Room.building_id == building_id)
 
@@ -23,25 +46,52 @@ def list_rooms():
         query = query.filter(Room.floor == floor)
 
     if feature_codes:
-        query = query.join(Room.features).filter(
-            Feature.code.in_(feature_codes)
+        query = (
+            query
+            .join(Room.features)
+            .filter(Feature.code.in_(feature_codes))
         )
 
-    # Timestamp logic intentionally deferred (depends on Classes model)
-
     rooms = query.distinct().all()
-    return jsonify([r.to_dict() for r in rooms])
+
+    # Python-level availability logic
+    result = []
+    for room in rooms:
+        room_dict = room_schema.dump(room)
+
+        if availability_at is not None:
+            availability = room.is_available_at(availability_at)
+            room_dict["is_available"] = availability
+
+            if is_available is not None and availability != is_available:
+                continue
+
+        result.append(room_dict)
+
+    payload = (
+        {"availability_at": availability_at.isoformat(), "rooms": result}
+        if availability_at is not None
+        else result
+    )
+
+    return jsonify(payload)
 
 
 @bp.route("/<int:room_id>", methods=["GET"])
 def get_room(room_id):
     room = Room.query.get_or_404(room_id)
-    return jsonify(room.to_dict())
+    return jsonify(room_schema.dump(room))
 
 
 @bp.route("", methods=["POST"])
 def create_room():
-    data = request.get_json()
+    try:
+        data = room_schema.load(request.get_json())
+    except ValidationError as err:
+        return jsonify({"errors": err.messages}), 400
+
+    # Extract feature_ids if provided separately
+    feature_ids = request.get_json().get("feature_ids", [])
 
     room = Room(
         number=data["number"],
@@ -50,38 +100,47 @@ def create_room():
         floor=data["floor"],
         capacity=data.get("capacity"),
         is_open=data.get("is_open", True),
-        type_id=data.get("type_id"),
+        type_id=data["type_id"],
+        locationX=data["locationX"],
+        locationY=data["locationY"],
+        sizeX=data["sizeX"],
+        sizeY=data["sizeY"],
     )
 
-    if "feature_ids" in data:
+    if feature_ids:
         room.features = Feature.query.filter(
-            Feature.id.in_(data["feature_ids"])
+            Feature.id.in_(feature_ids)
         ).all()
 
     db.session.add(room)
     db.session.commit()
 
-    return jsonify(room.to_dict()), 201
+    return jsonify(room_schema.dump(room)), 201
 
 
 @bp.route("/<int:room_id>", methods=["PUT"])
 def update_room(room_id):
     room = Room.query.get_or_404(room_id)
-    data = request.get_json()
+    try:
+        data = room_schema.load(request.get_json(), partial=True)
+    except ValidationError as err:
+        return jsonify({"errors": err.messages}), 400
 
     for field in [
-        "number", "name", "floor", "capacity", "is_open", "type_id"
+        "number", "name", "floor", "capacity", "is_open", "type_id",
+        "locationX", "locationY", "sizeX", "sizeY"
     ]:
         if field in data:
             setattr(room, field, data[field])
 
-    if "feature_ids" in data:
+    feature_ids = request.get_json().get("feature_ids")
+    if feature_ids is not None:
         room.features = Feature.query.filter(
-            Feature.id.in_(data["feature_ids"])
+            Feature.id.in_(feature_ids)
         ).all()
 
     db.session.commit()
-    return jsonify(room.to_dict())
+    return jsonify(room_schema.dump(room))
 
 
 @bp.route("/<int:room_id>", methods=["DELETE"])

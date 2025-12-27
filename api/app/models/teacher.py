@@ -11,11 +11,3 @@ class Teacher(db.Model):
 
     classes = db.relationship("Class", back_populates="teacher")
     subject = db.relationship("Subject", back_populates="subject_teachers")
-
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "name": f"{['M', 'Mme.'][self.gender]} {self.surname} {self.name}",
-            "gender": self.gender,
-            "subject": self.subject.to_dict() if self.subject else None,
-        }

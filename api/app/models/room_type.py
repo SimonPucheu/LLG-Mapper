@@ -8,10 +8,3 @@ class RoomType(db.Model):
     code = db.Column(db.String(10), nullable=False, unique=True)
 
     rooms = db.relationship("Room", back_populates="type")
-
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "name": self.name,
-            "code": self.code,
-        }

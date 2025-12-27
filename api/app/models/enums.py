@@ -3,8 +3,8 @@ import enum
 class Frequency(enum.Enum):
     ONCE = "once"
     WEEKLY = "weekly"
-    WEEK_A = "week A"
-    WEEK_B = "week B"
+    WEEK_A = "weekA"
+    WEEK_B = "weekB"
 
 class Color(enum.Enum):
     BLUE = "BLUE"

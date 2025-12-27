@@ -1,3 +1,4 @@
+from datetime import datetime
 from ..extensions import db
 
 class Room(db.Model):
@@ -27,7 +28,7 @@ class Room(db.Model):
     building = db.relationship("Building", back_populates="rooms")
     type = db.relationship("RoomType", back_populates="rooms")
     features = db.relationship("Feature", secondary="room_features", back_populates="rooms")
-    classes = db.relationship("Class", back_populates="room")
+    classes = db.relationship("Class", back_populates="room", lazy="selectin")
 
     @property
     def display_name(self):
@@ -35,17 +36,9 @@ class Room(db.Model):
             return self.name
         return f"{self.building.code}{self.number:03d}"
 
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "name": self.display_name,
-            "number": self.number,
-            "floor": self.floor,
-            "capacity": self.capacity,
-            "is_open": self.is_open,
-            "location": [self.locationX, self.locationY],
-            "size": [self.sizeX, self.sizeY],
-            "building": self.building.to_dict() if self.building else None,
-            "type": self.type.to_dict() if self.type else None,
-            "features": [f.to_dict() for f in self.features] if self.features else []
-        }
+    def is_available_at(self, dt):
+        from app.services.availability_service import is_room_available
+        return is_room_available(self, dt)
+    
+    def is_available_now(self):
+        return self.is_available_at(datetime.now())

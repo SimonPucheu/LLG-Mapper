@@ -20,11 +20,7 @@ class Class(db.Model):
     end_time = db.Column(db.Time, nullable=False)
 
     # Recurrence
-    recurrence = db.Column(
-        db.Enum(Frequency, name="class_frequency"),
-        nullable=False,
-        default=Frequency.WEEKLY
-    )
+    recurrence = db.Column(db.Enum(Frequency, values_callable=lambda x: [e.name for e in x]), default=Frequency.WEEKLY.name)
 
     # 0 = Monday, 6 = Sunday
     weekday = db.Column(db.Integer)
@@ -33,18 +29,3 @@ class Class(db.Model):
     teacher = db.relationship("Teacher", back_populates="classes")
     group = db.relationship("Group", back_populates="classes")
     subject = db.relationship("Subject", back_populates="classes")
-
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "room": self.room.to_dict() if self.room else None,
-            "teacher": self.teacher.to_dict() if self.teacher else None,
-            "group": self.group.to_dict() if self.group else None,
-            "subject": self.subject.to_dict() if self.subject else None,
-            "start_date": self.start_date.isoformat() if self.start_date else None,
-            "end_date": self.end_date.isoformat() if self.end_date else None,
-            "start_time": self.start_time.isoformat() if self.start_time else None,
-            "end_time": self.end_time.isoformat() if self.end_time else None,
-            "recurrence": self.recurrence,
-            "weekday": self.weekday
-        }

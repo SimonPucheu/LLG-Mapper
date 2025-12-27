@@ -9,11 +9,3 @@ class Building(db.Model):
     floor = db.Column(db.Integer, default=0)
 
     rooms = db.relationship("Room", back_populates="building")
-
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "name": self.name,
-            "code": self.code,
-            "floor": self.floor
-        }

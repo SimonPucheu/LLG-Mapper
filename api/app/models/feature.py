@@ -14,10 +14,3 @@ class Feature(db.Model):
         db.Column("room_id", db.Integer, db.ForeignKey("rooms.id"), primary_key=True),
         db.Column("feature_id", db.Integer, db.ForeignKey("features.id"), primary_key=True)
     )
-
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "name": self.name,
-            "code": self.code,
-        }
