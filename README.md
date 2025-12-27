@@ -4,7 +4,7 @@ A comprehensive **school room availability management system** built for student
 
 Made for **students** by **students**.
 
-**Competition:** Trophées NSI
+**Competition:** Trophées NSI 2025 - [More info](https://trophees-nsi.fr/)
 
 ---
 
@@ -840,7 +840,7 @@ GRAY
 
 ---
 
-## Development Notes
+## 🔧 Development Notes
 
 ### Database Migrations
 
